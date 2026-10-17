@@ -31,6 +31,12 @@ public class PauseMenu : MonoBehaviour
                 return;
             }
 
+            // No pausing while the "YOU DIED" screen covers the game (the pause menu would be hidden behind it).
+            if (DeathScreen.IsShowing && !gameIsPaused)
+            {
+                return;
+            }
+
             if (gameIsPaused)
             {
                 Resume();
