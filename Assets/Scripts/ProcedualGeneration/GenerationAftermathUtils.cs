@@ -263,6 +263,8 @@ public class GenerationAftermathUtils : MonoBehaviour
         {
             Debug.Log("Dungeon completed");
             sceneSwitcher.SetActive(true);
+            // tells the player that the portal back to the town has appeared
+            AudioManager.Play(Sfx.LevelClear);
             isCompleted = true;
 
         }
