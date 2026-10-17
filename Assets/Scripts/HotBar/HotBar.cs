@@ -9,6 +9,7 @@ public class Hotbar : MonoBehaviour
     private List<GameObject> slots;
     private int currentSlotIndex = 0;
     private ItemParent currentToolParent;
+    private bool toolHidden = false;
 
     void Start()
     {
@@ -96,12 +97,28 @@ public class Hotbar : MonoBehaviour
         if (slots.Count <= newIndex)
             return;
 
-        if (newIndex != currentSlotIndex)
+        if (newIndex != currentSlotIndex && !toolHidden)
             AudioManager.Play(Sfx.HotbarSwitch);
 
         slots[currentSlotIndex].SetActive(false);
         currentSlotIndex = newIndex;
         currentToolParent = slots[currentSlotIndex].GetComponent<ItemParent>();
+
+        // while the tool is hidden (knight is dead) only remember the selection
+        slots[currentSlotIndex].SetActive(!toolHidden);
+    }
+
+    // Hides the selected tool (used when the knight dies). The selection can still change.
+    public void HideCurrentTool()
+    {
+        toolHidden = true;
+        slots[currentSlotIndex].SetActive(false);
+    }
+
+    // Shows the selected tool again (used when the knight respawns).
+    public void ShowCurrentTool()
+    {
+        toolHidden = false;
         slots[currentSlotIndex].SetActive(true);
     }
 

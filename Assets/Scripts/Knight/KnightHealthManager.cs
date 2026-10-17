@@ -7,7 +7,7 @@ public class KnightHealthManager : MonoBehaviour, IDataPersistance
 {
     [SerializeField] private Image healthBar;
     [SerializeField] private GameObject knightObject;
-    private GameObject sword;
+    private Hotbar hotbar;
 
     public float healthAmount = 100f;
 
@@ -33,11 +33,12 @@ public class KnightHealthManager : MonoBehaviour, IDataPersistance
         animator.SetFloat("Health", healthAmount);
         animator.SetBool("isRespawned", true);
         isRespawning = false;
+        hotbar.ShowCurrentTool();
     }
 
     private void Start()
     {
-        sword = GameObject.Find("SwordParent");
+        hotbar = GetComponent<Hotbar>();
         animator = GetComponent<Animator>();
         knightObject = GameObject.Find("Knight");
         damageFlash = knightObject.GetComponent<DamageFlash>();
@@ -50,7 +51,7 @@ public class KnightHealthManager : MonoBehaviour, IDataPersistance
         if (healthAmount <= 0 && !isRespawning)
         {
             animator.SetBool("isRespawned", false);
-            sword.SetActive(false);
+            hotbar.HideCurrentTool();
             StartCoroutine(Respawn());
         }
 

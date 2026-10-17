@@ -33,6 +33,18 @@ public class ItemParent : MonoBehaviour
         Debug.Log(toolCollider);
     }
 
+    private void OnDisable()
+    {
+        // Coroutines are stopped when this object is deactivated (switching slot, dying...),
+        // so DelayAttack would never reset the state and the hotbar would stay locked.
+        isAttacking = false;
+
+        if (toolCollider != null)
+        {
+            toolCollider.enabled = false;
+        }
+    }
+
     private void Update()
     {
         if (!isAttacking)
