@@ -2690,7 +2690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   knightObject: {fileID: 568957405}
-  movementSpeed: 15
+  movementSpeed: 5
   currentMovementSpeed: 0
   staminaBar: {fileID: 360062625}
   stamina: 100
@@ -4754,7 +4754,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delay: 0.25
-  damageAmount: 5
+  damageAmount: 10
   center: {fileID: 1743161215}
   radius: 0.67
 --- !u!1 &995265744
@@ -5004,7 +5004,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delay: 0.25
-  damageAmount: 5
+  damageAmount: 10
   center: {fileID: 19280464}
   radius: 0.67
 --- !u!1 &1093933215
