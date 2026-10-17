@@ -89,9 +89,11 @@ public class KnightHealthManager : MonoBehaviour, IDataPersistance
     private IEnumerator Respawn()
     {
         isRespawning = true;
+        DeathScreen.Show(deathCount + 1);
         yield return new WaitForSeconds(5f);
         deathCount++;
-        transform.position = new Vector3(0, 0, 0);
+        transform.position = new Vector3(0, 0, 0); // hidden behind the dark death screen
         Reload();
+        DeathScreen.Hide();
     }
 }
