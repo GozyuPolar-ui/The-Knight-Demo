@@ -17,6 +17,7 @@ public class PauseMenu : MonoBehaviour
     {
         ppVolume = mainCamera.GetComponent<PostProcessVolume>();
         ppVolume.enabled = false;
+        SettingsMenu.AddPauseMenuButton(pauseMenuUI);
         pauseMenuUI.SetActive(false);
     }
 
@@ -24,6 +25,12 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            // While the settings panel is open, ESC only closes it (SettingsMenu handles that).
+            if (SettingsMenu.IsOpen)
+            {
+                return;
+            }
+
             if (gameIsPaused)
             {
                 Resume();

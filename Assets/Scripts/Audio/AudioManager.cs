@@ -41,6 +41,15 @@ public enum FootstepMode
     Run
 }
 
+// Volume groups the player can adjust in the Settings menu.
+public enum AudioChannel
+{
+    Master,
+    Music,
+    Ambience,
+    Sfx
+}
+
 // Central audio system. It creates itself automatically before the first scene loads,
 // survives scene changes (DontDestroyOnLoad) and needs no setup in the scene.
 //
@@ -55,10 +64,20 @@ public class AudioManager : MonoBehaviour
     private const string Folder = "Audio/";
 
     // ---- Tweak these defaults to taste ----
+    // Base loudness of each group. The player's Settings sliders (0..1) scale these.
+    private const float BaseMusicVolume = 0.5f;
+    private const float BaseAmbienceVolume = 0.35f;
+
+    private const string PrefsPrefix = "settings_volume_";
+
+    // Effective volumes = base loudness * the player's slider value (see ApplyVolumes).
     private float masterVolume = 1f;
-    private float musicVolume = 0.5f;
-    private float ambienceVolume = 0.35f;
+    private float musicVolume = BaseMusicVolume;
+    private float ambienceVolume = BaseAmbienceVolume;
     private float sfxVolume = 1f;
+
+    // What the player chose in the Settings menu (0..1), indexed by AudioChannel.
+    private readonly float[] userVolume = { 1f, 1f, 1f, 1f };
     private float fadeTime = 1f;          // seconds for the music crossfade between scenes
     private float pausedMusicScale = 0.3f; // music/ambience loudness while the game is paused
 
@@ -139,6 +158,8 @@ public class AudioManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        LoadVolumes();
 
         musicSource = CreateSource(true);
         ambienceSource = CreateSource(true);
@@ -277,6 +298,55 @@ public class AudioManager : MonoBehaviour
 
         source.clip = clip;
         source.Play();
+    }
+
+    // ---------------------------------------------------------------- volume settings
+
+    // Returns the slider value (0..1) the player has chosen for a channel.
+    public static float GetVolume(AudioChannel channel)
+    {
+        return Instance != null ? Instance.userVolume[(int)channel] : 1f;
+    }
+
+    // Sets a channel's slider value (0..1). Takes effect immediately and is remembered
+    // between runs (PlayerPrefs are written to disk by PlayerPrefs.Save / on quit).
+    public static void SetVolume(AudioChannel channel, float value)
+    {
+        if (Instance == null)
+        {
+            return;
+        }
+
+        Instance.userVolume[(int)channel] = Mathf.Clamp01(value);
+        PlayerPrefs.SetFloat(PrefsPrefix + channel, Instance.userVolume[(int)channel]);
+        Instance.ApplyVolumes();
+    }
+
+    // Puts every channel back to 100% (the original mix).
+    public static void ResetVolumes()
+    {
+        foreach (AudioChannel channel in System.Enum.GetValues(typeof(AudioChannel)))
+        {
+            SetVolume(channel, 1f);
+        }
+    }
+
+    private void LoadVolumes()
+    {
+        foreach (AudioChannel channel in System.Enum.GetValues(typeof(AudioChannel)))
+        {
+            userVolume[(int)channel] = Mathf.Clamp01(PlayerPrefs.GetFloat(PrefsPrefix + channel, 1f));
+        }
+
+        ApplyVolumes();
+    }
+
+    private void ApplyVolumes()
+    {
+        masterVolume = userVolume[(int)AudioChannel.Master];
+        musicVolume = BaseMusicVolume * userVolume[(int)AudioChannel.Music];
+        ambienceVolume = BaseAmbienceVolume * userVolume[(int)AudioChannel.Ambience];
+        sfxVolume = userVolume[(int)AudioChannel.Sfx];
     }
 
     // ---------------------------------------------------------------- public API
