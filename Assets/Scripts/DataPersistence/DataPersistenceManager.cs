@@ -24,6 +24,9 @@ public class DataPersistenceManager : MonoBehaviour
     private FileDataHandler dataHandler;
 
     private string selectedProfileId = "";
+
+    private const string MenuSceneName = "MainMenu";
+    private string loadedSceneName = "";
     public static DataPersistenceManager instance { get; private set; }
 
     private void Awake()
@@ -57,6 +60,7 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        this.loadedSceneName = scene.name;
         this.dataPersistanceObjects = FindAllDataPersistanceObjects();
         LoadGame();
     }
@@ -72,6 +76,12 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void ChangeSelectedProfileId(string newProfileId)
     {
+        if (newProfileId != this.selectedProfileId)
+        {
+            // do not carry the data of another profile over
+            this.gameData = null;
+        }
+
         this.selectedProfileId = newProfileId;
         LoadGame();
     }
@@ -89,9 +99,20 @@ public class DataPersistenceManager : MonoBehaviour
         }
 
         // Load the game data from the file using the data handler
-        this.gameData = this.dataHandler.Load(selectedProfileId);
+        GameData loadedData = this.dataHandler.Load(selectedProfileId);
 
-        if(this.gameData == null && this.initializeDataIfNull)
+        // When there is nothing on disk keep the data that is already in memory. Otherwise the
+        // inventory is lost between scenes whenever the game was not started through the menu
+        // (no profile selected) or the file could not be written.
+        if (loadedData != null)
+        {
+            this.gameData = loadedData;
+        }
+
+        // Starting directly from a gameplay scene: create fresh data so that saving works.
+        bool inGameplayScene = !string.IsNullOrEmpty(this.loadedSceneName) && this.loadedSceneName != MenuSceneName;
+
+        if(this.gameData == null && (this.initializeDataIfNull || inGameplayScene))
         {
             NewGame();
         }
@@ -132,6 +153,32 @@ public class DataPersistenceManager : MonoBehaviour
 
         //Save the game data to the file using the data handler
         dataHandler.Save(this.gameData,selectedProfileId);
+    }
+
+    // Saves only the inventory slots. Used by the portals: the items are kept when changing scene
+    // without carrying the player / camera position of this scene over to the next one.
+    public void SaveInventory()
+    {
+        if (disableDataPersistence || this.dataPersistanceObjects == null)
+        {
+            return;
+        }
+
+        if (this.gameData == null)
+        {
+            NewGame();
+        }
+
+        foreach (IDataPersistance dataPersistanceObject in this.dataPersistanceObjects)
+        {
+            if (dataPersistanceObject is Slot slot && slot != null)
+            {
+                slot.SaveData(ref this.gameData);
+            }
+        }
+
+        this.gameData.lastUpdated = System.DateTime.Now.ToBinary();
+        dataHandler.Save(this.gameData, selectedProfileId);
     }
 
     private void OnApplicationQuit()

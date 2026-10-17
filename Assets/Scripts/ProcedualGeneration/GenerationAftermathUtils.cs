@@ -250,6 +250,83 @@ public class GenerationAftermathUtils : MonoBehaviour
         return floorPositions.Count / 20;
     }
 
+    // The return portal appears close to the player instead of at the far end of the map.
+    // It keeps its far-away position only if no suitable spot is found.
+    private void MoveSceneSwitcherNearPlayer()
+    {
+        GameObject knight = knightObject != null ? knightObject : GameObject.FindGameObjectWithTag("Player");
+
+        if (knight == null || floorPositions == null)
+        {
+            return;
+        }
+
+        Vector2 playerPosition = knight.transform.position;
+
+        // first look for a free spot, then accept any floor cell
+        if (TryFindPortalSpot(playerPosition, true, out Vector2 spot) || TryFindPortalSpot(playerPosition, false, out spot))
+        {
+            sceneSwitcher.transform.position = new Vector3(spot.x, spot.y, sceneSwitcher.transform.position.z);
+        }
+    }
+
+    // minimum distance so that the player does not step into the portal right away
+    private const float PortalMinDistance = 2.5f;
+
+    private bool TryFindPortalSpot(Vector2 playerPosition, bool mustBeFree, out Vector2 spot)
+    {
+        float[] maxDistances = { 5f, 8f, 15f };
+
+        foreach (float maxDistance in maxDistances)
+        {
+            bool found = false;
+            float bestDistance = float.MaxValue;
+            spot = Vector2.zero;
+
+            foreach (MapCell2 cell in floorPositions)
+            {
+                Vector2 middle = MapCell2.ComputeMiddle(cell);
+                float distance = Vector2.Distance(middle, playerPosition);
+
+                if (distance < PortalMinDistance || distance > maxDistance || distance >= bestDistance)
+                {
+                    continue;
+                }
+
+                if (mustBeFree && !IsSpotFree(middle))
+                {
+                    continue;
+                }
+
+                found = true;
+                bestDistance = distance;
+                spot = middle;
+            }
+
+            if (found)
+            {
+                return true;
+            }
+        }
+
+        spot = Vector2.zero;
+        return false;
+    }
+
+    // a spot is free when there is no solid collider (trees, boulders, walls...) around it
+    private bool IsSpotFree(Vector2 position)
+    {
+        foreach (Collider2D other in Physics2D.OverlapCircleAll(position, 1f))
+        {
+            if (!other.isTrigger && !other.CompareTag("Player"))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void TryCompleteDungeon()
     {
         if(isCompleted)
@@ -262,6 +339,7 @@ public class GenerationAftermathUtils : MonoBehaviour
         if (enemies.Length <= numberEnemies/2)
         {
             Debug.Log("Dungeon completed");
+            MoveSceneSwitcherNearPlayer();
             sceneSwitcher.SetActive(true);
             // tells the player that the portal back to the town has appeared
             AudioManager.Play(Sfx.LevelClear);

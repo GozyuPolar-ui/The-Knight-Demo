@@ -58,6 +58,13 @@ public class Portal : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             AudioManager.Play(Sfx.Teleport);
+
+            // keep the inventory when moving between the town and the dungeon
+            if (DataPersistenceManager.instance != null)
+            {
+                DataPersistenceManager.instance.SaveInventory();
+            }
+
             SceneManager.LoadScene(sceneName);
         }
     }

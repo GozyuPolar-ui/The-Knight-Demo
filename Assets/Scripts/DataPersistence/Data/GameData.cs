@@ -33,6 +33,8 @@ public class GameData
         cameraMinPosition = new Vector2(-24f, -25.4f);
         slotsType = new SerializableDictionary<string,string>();
         slotsCount = new SerializableDictionary<string, int>();
+        // was never initialised, so House.SaveData threw on freshly created data and aborted the whole save
+        builtHouses = new SerializableDictionary<string, bool>();
     }
 
     public int GetPercentageComplete()
