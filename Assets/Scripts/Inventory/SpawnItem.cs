@@ -35,6 +35,7 @@ public class SpawnItem : MonoBehaviour
                
                     dragDropOriginal.RefreshCount(1);
                     Destroy(item);
+                    AudioManager.Play(Sfx.ItemPickup);
                     return;
                 }
             }
@@ -57,6 +58,10 @@ public class SpawnItem : MonoBehaviour
         if (inventoryIsFull)
         {
             Destroy(item);
+        }
+        else
+        {
+            AudioManager.Play(Sfx.ItemPickup);
         }
 
     }

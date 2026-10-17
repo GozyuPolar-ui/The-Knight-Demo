@@ -25,6 +25,7 @@ public class OnDropScript : MonoBehaviour, IDropHandler
                 dragDropOriginal.RefreshCount(dragDrop.GetCount());
                 // destroy the item that is being dragged
                 Destroy(dragDrop.gameObject);
+                AudioManager.Play(Sfx.EquipItem);
                 Debug.Log(dragDropOriginal.GetCount());
                 return;
             }
@@ -36,5 +37,6 @@ public class OnDropScript : MonoBehaviour, IDropHandler
         }
         // set the parent of the item that is being dragged to the slot
         dragDrop.originalPos = transform;
+        AudioManager.Play(Sfx.EquipItem);
     }
 }

@@ -38,6 +38,12 @@ public class EnemyHealthManager : MonoBehaviour
             damageFlash.Flash();
             healthAmount -= damage;
             healthBar.fillAmount = healthAmount / 20f;
+
+            AudioManager.Play(Sfx.Hit);
+            if (healthAmount <= 0)
+            {
+                AudioManager.Play(Sfx.EnemyDeath);
+            }
         }
     }
 

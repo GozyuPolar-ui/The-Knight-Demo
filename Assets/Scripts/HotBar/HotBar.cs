@@ -96,6 +96,9 @@ public class Hotbar : MonoBehaviour
         if (slots.Count <= newIndex)
             return;
 
+        if (newIndex != currentSlotIndex)
+            AudioManager.Play(Sfx.HotbarSwitch);
+
         slots[currentSlotIndex].SetActive(false);
         currentSlotIndex = newIndex;
         currentToolParent = slots[currentSlotIndex].GetComponent<ItemParent>();

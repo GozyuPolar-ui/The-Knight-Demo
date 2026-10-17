@@ -58,6 +58,7 @@ public class House : MonoBehaviour, IDataPersistance
 
                 isBuilt = true;
                 gameObject.SetActive(true);
+                AudioManager.Play(Sfx.Construction);
             }
             else
             {

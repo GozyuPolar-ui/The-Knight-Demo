@@ -144,6 +144,7 @@ public class EnemySwordParent : MonoBehaviour
 
         swordAnimator.SetTrigger("Attack");
         isAttacking = true;
+        AudioManager.Play(Sfx.SwordSwing, 0.6f);
         StartCoroutine(DelayAttack());
     }
 

@@ -8,6 +8,7 @@ public class EnemyCounterManager : MonoBehaviour
 
     private int maxEnemies = 0;
     private int currentNumberOfEnemies = 0;
+    private bool levelClearPlayed = false;
     GameObject enemyCounter = null;
     
     void Start()
@@ -39,6 +40,13 @@ public class EnemyCounterManager : MonoBehaviour
         if(currentNumberOfEnemies != 0 && currentNumberOfEnemies <= maxEnemies/2)
         {
             textComponent.color = Color.green;
+        }
+
+        // every enemy that was in the level has been defeated
+        if (!levelClearPlayed && maxEnemies > 0 && currentNumberOfEnemies == 0)
+        {
+            levelClearPlayed = true;
+            AudioManager.Play(Sfx.LevelClear);
         }
         
         

@@ -103,7 +103,15 @@ public class KnightController : MonoBehaviour, IDataPersistance
         {
             animator.SetBool("isMoving", false);
             animator.SetBool("isSprinting", false);
+            AudioManager.SetFootsteps(FootstepMode.None);
         }
+    }
+
+    private void OnDisable()
+    {
+        // FixedUpdate stops running when this component is disabled (e.g. inventory open),
+        // so make sure the looping footsteps do not keep playing.
+        AudioManager.SetFootsteps(FootstepMode.None);
     }
 
     private void MoveCharacter(bool isShiftPressed)
@@ -119,6 +127,7 @@ public class KnightController : MonoBehaviour, IDataPersistance
                 currentMovementSpeed = movementSpeed * 1.5f;
                 animator.SetBool("isMoving", false);
                 animator.SetBool("isSprinting", true);
+                AudioManager.SetFootsteps(FootstepMode.Run);
             }
             else
             {
@@ -129,6 +138,7 @@ public class KnightController : MonoBehaviour, IDataPersistance
                 currentMovementSpeed = movementSpeed;
                 animator.SetBool("isSprinting", false);
                 animator.SetBool("isMoving", true);
+                AudioManager.SetFootsteps(FootstepMode.Walk);
             }
 
             // Decrease stamina
@@ -155,6 +165,7 @@ public class KnightController : MonoBehaviour, IDataPersistance
             currentMovementSpeed = movementSpeed;
             animator.SetBool("isMoving", true);
             animator.SetBool("isSprinting", false);
+            AudioManager.SetFootsteps(FootstepMode.Walk);
         }
     }
 

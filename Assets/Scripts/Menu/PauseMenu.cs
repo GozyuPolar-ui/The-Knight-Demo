@@ -43,6 +43,7 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(false);
         Time.timeScale = 1f;
         gameIsPaused = false;
+        AudioManager.Play(Sfx.GamePause);
     }
 
     // Pauses the game by enabling the post-processing volume, showing the pause menu UI, and setting the time scale to 0.
@@ -52,12 +53,14 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         Time.timeScale = 0f;
         gameIsPaused = true;
+        AudioManager.Play(Sfx.GamePause);
     }
 
     // Loads the main menu scene by setting the time scale to normal and loading the specified game start scene.
     public void LoadMenu()
     {
         DataPersistenceManager.instance.SaveGame();
+        AudioManager.Play(Sfx.GameSaved);
         Time.timeScale = 1f;
         SceneManager.LoadScene(gameStartScene);
     }

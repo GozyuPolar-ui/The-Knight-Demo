@@ -13,7 +13,11 @@ public class Harvestable : MonoBehaviour
     public void Harvest()
     {
         --amount;
-        if(amount <= 0)
+        bool broken = amount <= 0;
+
+        PlayHarvestSound(broken);
+
+        if(broken)
         {
             Destroy(gameObject);
         }
@@ -25,6 +29,19 @@ public class Harvestable : MonoBehaviour
             spawner.CreateItem(droppedItemPrefab);
             Debug.Log("success");
 
+        }
+    }
+
+    private void PlayHarvestSound(bool broken)
+    {
+        switch (harvestableType)
+        {
+            case ToolType.Axe:
+                AudioManager.Play(broken ? Sfx.TreeBreak : Sfx.TreeHit);
+                break;
+            case ToolType.Pickaxe:
+                AudioManager.Play(broken ? Sfx.StoneBreak : Sfx.StoneHit);
+                break;
         }
     }
 

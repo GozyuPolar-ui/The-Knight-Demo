@@ -59,6 +59,7 @@ public class InventoryController : MonoBehaviour
     public void EnableInventory()
     {
         isInInventory = true;
+        AudioManager.Play(Sfx.InventoryOpen);
 
         knightController.enabled = false;
 

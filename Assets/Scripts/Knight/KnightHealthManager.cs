@@ -72,6 +72,8 @@ public class KnightHealthManager : MonoBehaviour, IDataPersistance
             damageFlash.Flash();
             healthAmount -= damage;
             healthBar.fillAmount = healthAmount / 100f;
+
+            AudioManager.Play(healthAmount <= 0 ? Sfx.KnightDeath : Sfx.KnightHurt);
         }
     }
 

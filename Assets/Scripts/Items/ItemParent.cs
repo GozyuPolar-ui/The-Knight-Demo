@@ -16,9 +16,11 @@ public class ItemParent : MonoBehaviour
     public float radius;
 
     private Collider2D toolCollider;
+    private KnightController knightController;
 
     private void Start()
     {
+        knightController = GetComponentInParent<KnightController>();
         knightAnimator = GetComponentInParent<Animator>();
         itemAnimator = GetComponentInChildren<Animator>();
         toolCollider = GetComponentInChildren<Collider2D>();
@@ -87,6 +89,13 @@ public class ItemParent : MonoBehaviour
 
         itemAnimator.SetTrigger("Attack");
         isAttacking = true;
+
+        // No swing sound while paused or while the inventory is open (clicks there still reach this script).
+        if (Time.timeScale > 0f && (knightController == null || knightController.enabled))
+        {
+            AudioManager.Play(Sfx.SwordSwing);
+        }
+
         StartCoroutine(DelayAttack());
     }
 
