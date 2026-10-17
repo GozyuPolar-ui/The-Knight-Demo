@@ -55,6 +55,8 @@ public class KnightHealthManager : MonoBehaviour, IDataPersistance
             StartCoroutine(Respawn());
         }
 
+#if UNITY_EDITOR
+        // Debug keys: only available inside the Unity editor, not in builds.
         if (Input.GetKeyDown(KeyCode.G))
         {
             TakeDamage(20f);
@@ -64,6 +66,7 @@ public class KnightHealthManager : MonoBehaviour, IDataPersistance
         {
             Heal(20f);
         }
+#endif
     }
 
     public void TakeDamage(float damage)

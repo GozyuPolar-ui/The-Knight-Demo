@@ -162,7 +162,7 @@ public class DeathScreen : MonoBehaviour
     }
 
     // Reuse the game's pixel font (taken from any text already in the scene).
-    private static TMP_FontAsset FindFont()
+    public static TMP_FontAsset FindFont()
     {
         TMP_FontAsset fallback = null;
 
