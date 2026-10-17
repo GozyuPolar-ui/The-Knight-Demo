@@ -44,6 +44,10 @@ public class SettingsMenu : MonoBehaviour
     private bool closeRequested;
     private float lastPreviewTime;
 
+    private GameObject settingsPage;
+    private GameObject controlsPage;
+    private TextMeshProUGUI titleLabel;
+
     // ---------------------------------------------------------------- startup hooks
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -263,17 +267,54 @@ public class SettingsMenu : MonoBehaviour
 
         Transform p = panel.transform;
 
-        CreateLabel(p, "SETTINGS", 72f, new Vector2(0f, 310f), new Vector2(700f, 100f), TextAlignmentOptions.Midline);
+        titleLabel = CreateLabel(p, "SETTINGS", 72f, new Vector2(0f, 310f), new Vector2(700f, 100f), TextAlignmentOptions.Midline);
 
-        AddVolumeRow(p, "MASTER", AudioChannel.Master, 195f);
-        AddVolumeRow(p, "MUSIC", AudioChannel.Music, 100f);
-        AddVolumeRow(p, "AMBIENCE", AudioChannel.Ambience, 5f);
-        AddVolumeRow(p, "SFX", AudioChannel.Sfx, -90f);
+        // Page 1: audio + fullscreen
+        Transform page = CreatePage(p, "SettingsPage");
+        settingsPage = page.gameObject;
 
-        AddFullscreenRow(p, -195f);
+        AddVolumeRow(page, "MASTER", AudioChannel.Master, 195f);
+        AddVolumeRow(page, "MUSIC", AudioChannel.Music, 100f);
+        AddVolumeRow(page, "AMBIENCE", AudioChannel.Ambience, 5f);
+        AddVolumeRow(page, "SFX", AudioChannel.Sfx, -90f);
 
-        CreateButton(p, "RESET", new Vector2(-170f, -310f), new Vector2(300f, 80f), ResetToDefaults);
-        CreateButton(p, "BACK", new Vector2(170f, -310f), new Vector2(300f, 80f), Close);
+        AddFullscreenRow(page, -195f);
+
+        CreateButton(page, "RESET", new Vector2(-300f, -310f), new Vector2(270f, 80f), ResetToDefaults);
+        CreateButton(page, "CONTROLS", new Vector2(0f, -310f), new Vector2(270f, 80f), () => ShowControls(true));
+        CreateButton(page, "BACK", new Vector2(300f, -310f), new Vector2(270f, 80f), Close);
+
+        // Page 2: key list (same data as the hint shown at the start of a new game)
+        page = CreatePage(p, "ControlsPage");
+        controlsPage = page.gameObject;
+
+        for (int i = 0; i < ControlsHint.Entries.GetLength(0); i++)
+        {
+            float y = 210f - 72f * i;
+
+            TextMeshProUGUI key = CreateLabel(page, ControlsHint.Entries[i, 0], 34f, new Vector2(-150f, y), new Vector2(360f, 60f), TextAlignmentOptions.MidlineRight);
+            key.color = BorderColor;
+            CreateLabel(page, ControlsHint.Entries[i, 1], 34f, new Vector2(235f, y), new Vector2(400f, 60f), TextAlignmentOptions.MidlineLeft);
+        }
+
+        CreateButton(page, "BACK", new Vector2(0f, -310f), new Vector2(300f, 80f), () => ShowControls(false));
+
+        ShowControls(false);
+    }
+
+    private static Transform CreatePage(Transform parent, string name)
+    {
+        GameObject go = new GameObject(name, typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        Stretch((RectTransform)go.transform);
+        return go.transform;
+    }
+
+    private void ShowControls(bool show)
+    {
+        settingsPage.SetActive(!show);
+        controlsPage.SetActive(show);
+        titleLabel.text = show ? "CONTROLS" : "SETTINGS";
     }
 
     private void AddVolumeRow(Transform parent, string title, AudioChannel channel, float y)
