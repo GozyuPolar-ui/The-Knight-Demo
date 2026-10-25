@@ -49,3 +49,6 @@ See every task is detail by accesing the [wiki](https://github.com/FMIProjects/T
 - [X] [Commented Code](https://github.com/FMIProjects/TheKnight/wiki/Commented-Code)
 - [X] [Design Patterns](https://github.com/FMIProjects/TheKnight/wiki/Design-Patterns)
 - [X] [AI Usage](https://github.com/FMIProjects/TheKnight/wiki/AI-Usage)
+
+
+TES
